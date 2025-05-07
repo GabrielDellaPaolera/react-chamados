@@ -1,5 +1,5 @@
 import { useState,createContext, useEffect } from "react";
-import { auth, db } from "../Services/firebaseConnection";
+import { auth, db } from "../services/firebaseConnection";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
@@ -76,7 +76,7 @@ async function signUp(email,password,name) {
            
             let data = {
                 uid:uid,
-                name:name,
+                nome:name,
                 email:email,
                 avatarUrl:null
             }
@@ -117,7 +117,9 @@ async function logout() {
             signUp,
             logout,
             loadingAuth,
-            loading
+            loading,
+            storageUser,
+            setUser
     
         }}
         >

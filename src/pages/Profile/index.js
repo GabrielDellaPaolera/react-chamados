@@ -4,60 +4,148 @@ import Title from '../../components/Title'
 
 import { FiSettings, FiUpload } from 'react-icons/fi'
 import avatar from '../../assets/avatar.png'
-import { AuthContext } from '../../contexts/auth'
+import {AuthContext} from '../../contexts/auth'
 
-export default function Profile() {
+import { db, storage } from '../../services/firebaseConnection'
+import { doc, updateDoc } from 'firebase/firestore'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
-    const { user } = useContext(AuthContext);
-    const {avatarUrl, setAvatarUrl} = useState(user.avatarUrl && user.avatarUrl);
+import { toast } from 'react-toastify'
 
-return(
-    <div> 
-        <Header/>
-        <div className = "content"> 
-        <Title name = "Minha conta">
+import './profile.css';
 
-        <FiSettings size={25} />
+export default function Profile(){
+
+  const { user, storageUser, setUser, logout } = useContext(AuthContext);
+
+  const [avatarUrl, setAvatarUrl] = useState(user && user.avatarUrl)
+  const [imageAvatar,setImageAvatar] = useState(null);
+
+  const [nome,setNome] = useState(user && user.name)
+  const [email,setEmail] = useState(user && user.email)
+
+function handleFile(e){
+    if(e.target.files[0]){
+        const image = e.target.files[0];
+
+        if (image.type === 'image/jpeg' || image.type === 'image/png') {
+            setImageAvatar(image)
+            setAvatarUrl(URL.createObjectURL(image))
+        }
+        else {
+            alert('Envie uma imagem do tipo PNG ou JPEG')
+            setImageAvatar(null)
+            return;
+        }
+    }
+}
+
+
+async function handleUpload(){
+    const currentUid = user.uid;
+
+    const uploadRef = ref(storage, `images/${currentUid}/${imageAvatar.name}`)
+
+    const uploadTask = uploadBytes(uploadRef, imageAvatar)
+    .then((snapshot)=> {
+
         
-        </Title> 
+    getDownloadURL(snapshot.ref).then(async (downloadURL) => {
+    let urlFoto = downloadURL;
 
-        <div className="container">
 
-        <form className = 'form-profile'> 
-        <label className="laber-avatar">
+    const docRef = doc(db, 'users', user.uid)
+    await updateDoc(docRef, {
+        name: nome,
+        avatarUrl: urlFoto
+    }) 
+    .then(() => {
+        let data = {
+            ...user,
+            name: nome,
+            avatarUrl: urlFoto
+        }
 
-        <span>
-            <FiUpload color="#fff" size={25} />
-        </span>
+        setUser(data)
+        storageUser(data)
+        toast.success('Perfil atualizado com sucesso!')
+    })  
 
-        <input type='file' accpt='image/*'/> <br/>
+   })
 
-        {avatarUrl === null ? (
-            <img src={avatar} alt="Foto de perfil" width={250} height = {250} />
-        ) : (
+ })
 
-            <img src={avatar} alt="Foto de perfil" width={250} height = {250} />
-        )}
-        </label>
+}
 
-        <label> Nome </label>
-        <input type='text' placeholder='Seu nome'/>
-        
-        <label> Nome </label>
-        <input type='text' placeholder='seuemail@mail.com' disabled={true}/>
-            
-        <button type = "submit"> Salvar  </button>
-        </form> 
-    
+
+async function handleSubmit(e){
+    e.preventDefault();
+
+    if(imageAvatar === null && nome !== ''){
+       const docRef = doc (db, 'users', user.uid)
+        await updateDoc(docRef, {
+           name: nome,
+           avatarUrl: null
+       })
+       .then(() => {
+           let data = {
+               ...user,
+               name: nome,
+           }
+
+           setUser(data)
+           storageUser(data)
+           toast.success('Perfil atualizado com sucesso!')
+       })
+
+    } else if ( nome !== '' && imageAvatar !== null){
+         handleUpload();
+    }
+
+ }
+  return(
+    <div>
+      <Header/>
+
+      <div className="content">
+        <Title name="Minha conta">
+          <FiSettings size={25} />
+        </Title>
+
+       <div className="container">
+
+        <form className="form-profile" onSubmit={handleSubmit}>
+          <label className="label-avatar">
+            <span>
+              <FiUpload color="#FFF" size={25} />
+            </span>
+
+            <input type="file" accept="image/*" onChange ={handleFile} /> <br/>
+            {avatarUrl === null ? (
+              <img src={avatar} alt="Foto de perfil" width={250} height={250} />
+            ) : (
+              <img src={avatarUrl} alt="Foto de perfil" width={250} height={250} />
+            )}
+
+          </label>
+
+          <label>Nome</label>
+          <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} />
+
+          <label>Email</label>
+          <input type="text" value={email} disabled={true} />
+          
+          <button type="submit">Salvar</button>
+        </form>
+
+       </div>
+
+       <div className="container">
+         <button className="logout-btn" onClick={ () => logout() }>Sair</button>
+       </div>
+
+      </div>
+
     </div>
-
-    <div className= "conteiner"> 
-        <button className="logout"> Sair </button>
-    </div>
-    
-    
-    </div>
-    </div>
-    
-)
+  )
 }
