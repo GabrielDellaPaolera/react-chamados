@@ -49,7 +49,7 @@ async function handleUpload(){
     const uploadTask = uploadBytes(uploadRef, imageAvatar)
     .then((snapshot)=> {
 
-        
+
     getDownloadURL(snapshot.ref).then(async (downloadURL) => {
     let urlFoto = downloadURL;
 
@@ -85,7 +85,7 @@ async function handleSubmit(e){
        const docRef = doc (db, 'users', user.uid)
         await updateDoc(docRef, {
            name: nome,
-           avatarUrl: null
+           avatarUrl: user.avatarUrl ?? null
        })
        .then(() => {
            let data = {
@@ -99,7 +99,7 @@ async function handleSubmit(e){
        })
 
     } else if ( nome !== '' && imageAvatar !== null){
-         handleUpload();
+         await handleUpload();
     }
 
  }
