@@ -45,7 +45,11 @@ const {logout} = useContext(AuthContext); // Pegando a função de logout do con
                             <tr>
                                 <td data-label="Cliente">Mercadinho</td>
                                 <td data-label="Assunto">Suporte</td>
-                                <td data-label="Status">Em Aberto</td>
+                                <td data-label="Status">
+                                <span className="badge" style={{backgroundColor: '#999'}}>
+                                    Em Aberto
+                                </span>
+                                </td>
                                 <td data-label="Cadastrando">12/05/2022</td>
                                 <td data-label="#">
                                     <button className='action' style = {{backgroundColor: '#3bb9ff'}}>  
@@ -59,8 +63,30 @@ const {logout} = useContext(AuthContext); // Pegando a função de logout do con
                                 </td>  
                                
                             </tr>
-                        </tbody>
 
+
+                            <tr>
+                                <td data-label="Cliente">Mercadinho</td>
+                                <td data-label="Assunto">Suporte</td>
+                                <td data-label="Status">
+                                <span className="badge" style={{backgroundColor: '#999'}}>
+                                    Em Aberto
+                                </span>
+                                </td>
+                                <td data-label="Cadastrando">12/05/2022</td>
+                                <td data-label="#">
+                                    <button className='action' style = {{backgroundColor: '#3bb9ff'}}>  
+                                        <FiSearch color="#FFF" size={17} />
+                                    </button>
+                                    <button className='action' style = {{backgroundColor: '#F6a935'}}>
+                                        <FiEdit2 color="#FFF" size={17} />
+                                    </button>
+
+                                </td>  
+                            
+                            </tr>
+
+                        </tbody>
 
                     </table>
                 </>
