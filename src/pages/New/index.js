@@ -1,21 +1,75 @@
-import { useState } from 'react';
+import { useState,useEffect,useContext } from 'react';
 import Title from '../../components/Title';
 import Header from '../../components/Header';
-
 import { FiPlusCircle } from 'react-icons/fi';
+import { AuthContext } from '../../contexts/auth';
+import { db } from '../../services/firebaseConnection';
+import { collection, getDocs,getDoc, doc } from 'firebase/firestore';
 
 import './new.css';
 
+const listRef = collection(db, 'costumers');
+
 export default function New() {
+    const { user } = useContext(AuthContext);
 
     const [costumers, setCostumers] = useState([]);
+    const [loadCostumer,setLoadCostumer] = useState(true);
+    const [costumerSelected, setCostumerSelected] = useState(0);    
 
     const [assunto, setAssunto] = useState('Suporte');
     const [status, setStatus] = useState('Aberto');
     const [complemento, setComplemento] = useState('');
 
+    useEffect(() => {
+        async function loadCostumers() {
+            const querySnapshot = await getDocs(listRef)
+            .then( (snapshot) => {
+                
+                let lista = [];
+
+                snapshot.forEach((doc) => {
+                    lista.push({
+                        id: doc.id,
+                        nomeFantasia: doc.data().nomeFantasia,
+                    });
+                });
+
+                if (snapshot.docs.size === 0) {
+                    console.log("Nenhum cliente encontrado!");
+                    setCostumers([{id:1, nomeFantasia: 'Mercado Teste'}]);  
+                    setLoadCostumer(false);
+                    return;
+                }
+
+                setCostumers(lista);
+                setLoadCostumer(false);
+
+
+            })
+            .catch((error) => {
+                console.log("Error getting documents: ", error);
+                setLoadCostumer(false);
+                setCostumers([{id:1, nomeFantasia: 'Mercado Teste'}]);  
+            });
+    
+        }
+        loadCostumers();   
+    }, []);
+
+
+
     function handleOptionChange(e) {
         setStatus(e.target.value);
+    }
+
+
+    function handleOptionSelect(e) {
+        setStatus(e.target.value);
+    }
+
+    function handleChangeCostumer(e) {
+        setCostumerSelected(e.target.value);
     }
 
     return (
@@ -30,13 +84,26 @@ export default function New() {
             <div className="container">
                 <form className="form-profile">
                     <label>Cliente</label>
-                    <select>
-                        <option key={1} value={1}>Mercado Teste</option>
-                        <option key={2} value={2}>Loja informatica</option>
-                    </select>
+                    {loadCostumer ? ( 
+                        <input 
+                        type="text" 
+                        disabled={true} 
+                        value="Carregando..." 
+                        />
+                    ) : (
+                        <select value={costumerSelected} onChange={handleChangeCostumer}>
+                            {costumers.map((item,index) => {
+                                return (
+                                    <option key={index} value={index}>
+                                        {item.nomeFantasia}
+                                    </option>
+                                );
+                            })}
+                        </select>
+                    )}
 
                     <label>Assunto</label>
-                    <select>
+                    <select valie ='{assunto}' onChange={handleOptionSelect}>  
                         <option value="Suporte"> Suporte</option>
                         <option value="Visita Tecnica"> Visita Tecnica</option>
                         <option value="Financeiro"> Financeiro</option>
