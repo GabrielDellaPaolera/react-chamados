@@ -4,7 +4,8 @@ import Header from '../../components/Header';
 import { FiPlusCircle } from 'react-icons/fi';
 import { AuthContext } from '../../contexts/auth';
 import { db } from '../../services/firebaseConnection';
-import { collection, getDocs,getDoc, doc } from 'firebase/firestore';
+import { collection, getDocs,getDoc, doc, addDoc } from 'firebase/firestore';
+import { toast } from 'react-toastify';
 
 import './new.css';
 
@@ -71,6 +72,29 @@ export default function New() {
     function handleChangeCostumer(e) {
         setCostumerSelected(e.target.value);
     }
+    
+    async function handleRegister(e) {
+        e.preventDefault();
+
+        await addDoc(collection(db, 'chamados'), {
+            created:new Date(),
+            cliente: costumers[costumerSelected].nomeFantasia,
+            ClienteId: costumers[costumerSelected].id,
+            assunto: assunto,
+            complemento: complemento,
+            status: status,
+            userId: user.uid,
+        })
+        .then(() => {
+            toast.success('Chamado criado com sucesso!');
+            setComplemento('');
+            setCostumerSelected(0);
+        })
+        .catch((error) => {
+            console.log(error);
+            toast.error('Erro ao criar chamado, tente mais tarde!');
+        });
+    }
 
     return (
         <div> 
@@ -82,7 +106,7 @@ export default function New() {
             </Title>
 
             <div className="container">
-                <form className="form-profile">
+                <form className="form-profile" onSubmit={handleRegister}>
                     <label>Cliente</label>
                     {loadCostumer ? ( 
                         <input 
