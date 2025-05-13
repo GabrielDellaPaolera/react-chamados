@@ -4,9 +4,9 @@ import Header from '../../components/Header';
 import { FiPlusCircle } from 'react-icons/fi';
 import { AuthContext } from '../../contexts/auth';
 import { db } from '../../services/firebaseConnection';
-import { collection, getDocs,getDoc, doc, addDoc } from 'firebase/firestore';
+import { collection, getDocs,getDoc, doc, addDoc, updateDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import './new.css';
 
@@ -15,6 +15,7 @@ const listRef = collection(db, 'costumers');
 export default function New() {
     const { user } = useContext(AuthContext);
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const [costumers, setCostumers] = useState([]);
     const [loadCostumer,setLoadCostumer] = useState(true);
@@ -102,7 +103,27 @@ export default function New() {
         e.preventDefault();
 
         if(idCostumer) {
-            alert("Editando chamando");
+            
+            const docRef = doc(db, 'chamados', id);
+            await updateDoc(docRef, {
+                cliente: costumers[costumerSelected].nomeFantasia,
+                ClienteId: costumers[costumerSelected].id,
+                assunto: assunto,
+                complemento: complemento,
+                status: status,
+                userId: user.uid,
+            })
+            .then(() => {
+                toast.info('Chamado editado com sucesso!');
+                setComplemento('');
+                setCostumerSelected(0);
+                navigate('/dashboard');
+            })
+            .catch((error) => {
+                console.log(error);
+                toast.error('Erro ao editar chamado, tente mais tarde!');
+            });
+
             return;
         }
 
@@ -131,7 +152,7 @@ export default function New() {
             <Header/>
         
         <div className="content"> 
-            <Title name="Novo Chamado" >
+            <Title name={id ? "Editando Chamado" : "Novo chamado"} >
             <FiPlusCircle size={25} color="#000" />
             </Title>
 

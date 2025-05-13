@@ -153,7 +153,7 @@ useEffect(() => {
                                 <td data-label="Assunto">{item.assunto}</td>
                                 <td data-label="Status">
                                 <span className="badge" style={{backgroundColor: item.status === 'Aberto' ? '#5cb85c' : '#999'}}>
-                                    Aberto
+                                    {item.status}
                                 </span>
                                 </td>
                                 <td data-label="Cadastrado">{item.createdFormat}</td>
