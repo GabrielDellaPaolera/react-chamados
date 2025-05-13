@@ -21,12 +21,12 @@ export default function Header() {
             Chamados
         </Link>
         <Link to = "/costumers">
-            <FiHome color="#FFF" size={24} />
+            <FiUser color="#FFF" size={24} />
             Clientes
         </Link>
 
         <Link to = "/profile">
-            <FiHome color="#FFF" size={24} />
+            <FiSettings color="#FFF" size={24} />
             Perfil
         </Link>
 

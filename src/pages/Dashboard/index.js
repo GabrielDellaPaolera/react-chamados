@@ -8,7 +8,7 @@ import { db } from "../../services/firebaseConnection"; // Importando a conexão
 import { Link } from "react-router-dom";
 import { collection,getDocs,orderBy,limit,startAfter,query } from 'firebase/firestore'; // Importando as funções do Firebase Firestore
 
-import { format } from "date-fns"; // Importando a biblioteca date-fns para formatação de datas
+import { format, set } from "date-fns"; // Importando a biblioteca date-fns para formatação de datas
 
 import'./dashboard.css'; // Importando o CSS do Dashboard
 
@@ -20,8 +20,11 @@ const {logout} = useContext(AuthContext); // Pegando a função de logout do con
 const [chamados,setChamados] = useState([]); // Estado para armazenar os chamados
 const [loading,setLoading] = useState(true); // Estado para controlar o carregamento
 const [isEmpty,setIsEmpty] = useState(false); // Estado para verificar se a lista de chamados está vazia
+const [lastDocs,setLastDocs] = useState(); // Estado para armazenar o último documento carregado
+const [loadingMore,setLoadingMore] = useState(false); // Estado para controlar o carregamento de mais chamados
 
-    useEffect(() => {
+
+useEffect(() => {
         async function loadChamados(){  
             const q = query(listRef,orderBy('created','desc'),limit(5)); // Criando a consulta para pegar os chamados ordenados pela data de criação em ordem decrescente e limitando a 5 resultados
 
@@ -58,12 +61,31 @@ const [isEmpty,setIsEmpty] = useState(false); // Estado para verificar se a list
                 });
             });
 
+            const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1]; // Pegando o último documento da consulta
+          
+
             setChamados(chamados => [...chamados,...lista]); // Atualizando o estado com os chamados
+            setLastDocs(lastDoc); // Atualizando o estado com o último documento
+
+        
         } else {
             setIsEmpty(true); // Se a consulta não retornou resultados, atualiza o estado para indicar que a lista está vazia
 
         }
+
+        setLoadingMore(false); // Atualizando o estado de carregamento para falso
     
+    }
+
+    async function handleMore(){
+        setLoadingMore(true); // Atualizando o estado de carregamento para verdadeiro
+       
+        const q = query(listRef,orderBy('created','desc'),startAfter(lastDocs),limit(5)); // Criando a consulta para pegar os próximos 5 chamados
+        const querySnapshot = await getDocs(q); // Executando a consulta e pegando os resultados
+        await updateState(querySnapshot); // Atualizando o estado com os resultados
+
+        setLoadingMore(false); // Atualizando o estado de carregamento para falso
+
     }
 
     if(loading){
@@ -130,8 +152,8 @@ const [isEmpty,setIsEmpty] = useState(false); // Estado para verificar se a list
                                 <td data-label="Cliente">{item.cliente}</td>
                                 <td data-label="Assunto">{item.assunto}</td>
                                 <td data-label="Status">
-                                <span className="badge" style={{backgroundColor: '#999'}}>
-                                    Em Aberto
+                                <span className="badge" style={{backgroundColor: item.status === 'Aberto' ? '#5cb85c' : '#999'}}>
+                                    Aberto
                                 </span>
                                 </td>
                                 <td data-label="Cadastrado">{item.createdFormat}</td>
@@ -154,6 +176,13 @@ const [isEmpty,setIsEmpty] = useState(false); // Estado para verificar se a list
 
                     </table>
 
+
+                    {loadingMore && <h3>Buscando mais chamados...</h3>}
+                    {!loadingMore && !isEmpty && (
+                        <button className="btn-more" onClick={handleMore}>
+                            Carregar mais
+                        </button>
+                    )}
                        </>
                     )}
 
