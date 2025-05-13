@@ -1,4 +1,3 @@
-import './signup.css';
 import logo from '../../assets/logo.png';
 import {useState, useContext} from 'react';
 import {Link} from 'react-router-dom';
@@ -61,7 +60,7 @@ export default function SignUp() {
 
         </form>
 
-        <Link to="/register"> Já possui uma conta ? Faço login </Link>
+        <Link to="/register"> Já possui uma conta ? Faça login </Link>
 
             </div>  
         </div>

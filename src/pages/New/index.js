@@ -94,7 +94,7 @@ export default function New() {
 
 
     function handleOptionSelect(e) {
-        setStatus(e.target.value);
+        setAssunto(e.target.value);
     }
 
     function handleChangeCostumer(e) {
@@ -180,7 +180,7 @@ export default function New() {
                     )}
 
                     <label>Assunto</label>
-                    <select valie ='{assunto}' onChange={handleOptionSelect}>  
+                    <select value ={assunto} onChange={handleOptionSelect}>  
                         <option value="Suporte"> Suporte</option>
                         <option value="Visita Tecnica"> Visita Tecnica</option>
                         <option value="Financeiro"> Financeiro</option>

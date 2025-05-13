@@ -13,6 +13,8 @@ function RoutesApp() {
         <Route path="/" element={<SignIn />} />
         
         <Route path="/register" element={<SignUp />} />
+
+        <Route path="/SignUp" element={ <SignUp/> } />
         
         <Route path="/dashboard" element={ <Private><Dashboard/></Private>  } />
          
