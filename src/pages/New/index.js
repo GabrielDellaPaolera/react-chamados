@@ -28,8 +28,29 @@ export default function New() {
 
 
     useEffect(() => {
+
+        async function loadId(lista) {
+            const docRef = doc(db, 'chamados', id);
+            await getDoc(docRef)
+            .then((snapshot) => {
+                setAssunto(snapshot.data().assunto);
+                setComplemento(snapshot.data().complemento);
+                setStatus(snapshot.data().status);
+    
+                const index = lista.findIndex(item => item.id === snapshot.data().ClienteId);
+                setCostumerSelected(index);
+                setIdCostumer(true);
+    
+              })    
+              .catch((error) => {
+                console.log("Error getting document:", error);
+                setIdCostumer(false);
+              })
+    }
+
+
         async function loadCostumers() {
-            const querySnapshot = await getDocs(listRef)
+        await getDocs(listRef)
             .then( (snapshot) => {
                 
                 let lista = [];
@@ -64,25 +85,6 @@ export default function New() {
         }
         loadCostumers();   
     }, [id]);
-
-    async function loadId(lista) {
-        const docRef = doc(db, 'chamados', id);
-        await getDoc(docRef)
-        .then((snapshot) => {
-            setAssunto(snapshot.data().assunto);
-            setComplemento(snapshot.data().complemento);
-            setStatus(snapshot.data().status);
-
-            const index = lista.findIndex(item => item.id === snapshot.data().ClienteId);
-            setCostumerSelected(index);
-            setIdCostumer(true);
-
-          })    
-          .catch((error) => {
-            console.log("Error getting document:", error);
-            setIdCostumer(false);
-          })
-}
 
 
 

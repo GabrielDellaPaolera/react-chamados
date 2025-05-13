@@ -1,5 +1,5 @@
-import { useContext,useState,useEffect } from "react";
-import { AuthContext } from "../../contexts/auth";
+import {useState,useEffect } from "react";
+
 
 import Header from "../../components/Header";
 import Title from "../../components/Title";
@@ -16,7 +16,6 @@ import'./dashboard.css'; // Importando o CSS do Dashboard
 const listRef = collection(db,'chamados'); // Referência para a coleção 'chamados' no Firestore
 
 export default function Dashboard(){
-const {logout} = useContext(AuthContext); // Pegando a função de logout do contexto de autenticação
 
 const [chamados,setChamados] = useState([]); // Estado para armazenar os chamados
 const [loading,setLoading] = useState(true); // Estado para controlar o carregamento
