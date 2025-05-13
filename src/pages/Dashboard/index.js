@@ -24,6 +24,8 @@ const [isEmpty,setIsEmpty] = useState(false); // Estado para verificar se a list
 const [lastDocs,setLastDocs] = useState(); // Estado para armazenar o último documento carregado
 const [loadingMore,setLoadingMore] = useState(false); // Estado para controlar o carregamento de mais chamados
 
+const [showPostModal,setShowPostModal] = useState(false); // Estado para controlar a exibição do modal
+const [datail,setDetail] = useState(); // Estado para armazenar os detalhes do chamado
 
 useEffect(() => {
         async function loadChamados(){  
@@ -87,6 +89,12 @@ useEffect(() => {
 
         setLoadingMore(false); // Atualizando o estado de carregamento para falso
 
+    }
+
+
+    function toggleModal(item){
+        setShowPostModal(!showPostModal); // Alternando a exibição do modal
+        setDetail(item); // Atualizando o estado com os detalhes do chamado
     }
 
     if(loading){
@@ -159,7 +167,7 @@ useEffect(() => {
                                 </td>
                                 <td data-label="Cadastrado">{item.createdFormat}</td>
                                 <td data-label="#">
-                                    <button className='action' style = {{backgroundColor: '#3bb9ff'}}>  
+                                    <button className='action' style = {{backgroundColor: '#3bb9ff'}} onClick={ () => toggleModal(item)}>  
                                         <FiSearch color="#FFF" size={17} />
                                     </button>
                                     <Link to={`/new/${item.id}`} className='action' style = {{backgroundColor: '#F6a935'}}>
@@ -191,7 +199,12 @@ useEffect(() => {
 
             </div> 
 
-            <Modal/>
+           {showPostModal && (
+                <Modal
+                conteudo={datail}
+                close={() => setShowPostModal(!showPostModal)}
+                />
+           )}
            
         </div>
     )      

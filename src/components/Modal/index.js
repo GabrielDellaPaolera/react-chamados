@@ -1,11 +1,11 @@
 import './modal.css';
 import { FiX } from 'react-icons/fi';
 
-export default function Modal() {  
+export default function Modal({ conteudo, close }) {  
     return (
         <div className  = "modal">
             <div className = "container">
-                <button className = "close">
+                <button className = "close" onClick={close}>
                     <FiX size={25} color="#000" />
                     Voltar
                 </button> 
@@ -14,37 +14,35 @@ export default function Modal() {
                     <h2> Detalhes do chamado </h2>
                 <div className = "row">
                     <span>
-                        Cliente: <i>Nome do cliente</i>
+                        Cliente: <i>{conteudo.cliente}</i>
                     </span>
                 </div>
 
                 <div className = "row">
                 <span>
-                Assunto: <i>Suporte</i>
+                Assunto: <i>{conteudo.assunto}</i>
                 </span>
                 <span>
-                    Cadastrado em: <i>01/01/2023</i>    
+                    Cadastrado em: <i>{conteudo.createdFormat}</i>    
                 </span>
                 </div>
 
                 <div className = "row">
                     <span>
-                        Status: <i>Em andamento</i>
+                        Status: <i className="status-badge" style={{color : "#FFF", backgroundColor: conteudo.status === 'Aberto' ? '#5cb85c' : '#999'}}>
+                            {conteudo.status}
+                               </i>
                     </span>
                 </div>    
 
-                <> 
-                <h3>Complemento</h3>
-                <p> 
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                    Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas 
-                    congue ligula ac quam viverra nec consectetur ante 
-                    hendrerit. Donec et mollis dolor. Praesent et diam eget 
-                    libero egestas faucibus. Donec et mollis dolor. Praesent 
-                    et diam eget libero egestas faucibus. Donec et mollis 
-                    dolor. Praesent et diam eget libero egestas faucibus.
-                </p>
-                </>
+                {conteudo.complemento !== '' && (
+                                    <> 
+                                    <h3>Complemento</h3>
+                                    <p> 
+                                        {conteudo.complemento === '' ? 'Não há complemento' : conteudo.complemento}
+                                    </p>
+                                    </>
+                )}
 
                 </main>
 
