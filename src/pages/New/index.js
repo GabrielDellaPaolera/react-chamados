@@ -6,6 +6,7 @@ import { AuthContext } from '../../contexts/auth';
 import { db } from '../../services/firebaseConnection';
 import { collection, getDocs,getDoc, doc, addDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
 
 import './new.css';
 
@@ -13,6 +14,7 @@ const listRef = collection(db, 'costumers');
 
 export default function New() {
     const { user } = useContext(AuthContext);
+    const { id } = useParams();
 
     const [costumers, setCostumers] = useState([]);
     const [loadCostumer,setLoadCostumer] = useState(true);
@@ -21,6 +23,8 @@ export default function New() {
     const [assunto, setAssunto] = useState('Suporte');
     const [status, setStatus] = useState('Aberto');
     const [complemento, setComplemento] = useState('');
+    const [idCostumer, setIdCostumer] = useState(false);
+
 
     useEffect(() => {
         async function loadCostumers() {
@@ -46,7 +50,9 @@ export default function New() {
                 setCostumers(lista);
                 setLoadCostumer(false);
 
-
+                if (id) {
+                    loadId(lista);
+                }
             })
             .catch((error) => {
                 console.log("Error getting documents: ", error);
@@ -56,7 +62,26 @@ export default function New() {
     
         }
         loadCostumers();   
-    }, []);
+    }, [id]);
+
+    async function loadId(lista) {
+        const docRef = doc(db, 'chamados', id);
+        await getDoc(docRef)
+        .then((snapshot) => {
+            setAssunto(snapshot.data().assunto);
+            setComplemento(snapshot.data().complemento);
+            setStatus(snapshot.data().status);
+
+            const index = lista.findIndex(item => item.id === snapshot.data().ClienteId);
+            setCostumerSelected(index);
+            setIdCostumer(true);
+
+          })    
+          .catch((error) => {
+            console.log("Error getting document:", error);
+            setIdCostumer(false);
+          })
+}
 
 
 
@@ -75,6 +100,11 @@ export default function New() {
     
     async function handleRegister(e) {
         e.preventDefault();
+
+        if(idCostumer) {
+            alert("Editando chamando");
+            return;
+        }
 
         await addDoc(collection(db, 'chamados'), {
             created:new Date(),
