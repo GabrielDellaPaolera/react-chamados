@@ -8,7 +8,8 @@ import { db } from "../../services/firebaseConnection"; // Importando a conexão
 import { Link } from "react-router-dom";
 import { collection,getDocs,orderBy,limit,startAfter,query } from 'firebase/firestore'; // Importando as funções do Firebase Firestore
 
-import { format, set } from "date-fns"; // Importando a biblioteca date-fns para formatação de datas
+import { format } from "date-fns"; // Importando a biblioteca date-fns para formatação de datas
+import Modal from '../../components/Modal'; // Importando o componente Modal
 
 import'./dashboard.css'; // Importando o CSS do Dashboard
 
@@ -189,6 +190,8 @@ useEffect(() => {
                 </>
 
             </div> 
+
+            <Modal/>
            
         </div>
     )      
