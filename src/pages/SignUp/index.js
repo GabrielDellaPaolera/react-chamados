@@ -31,7 +31,7 @@ export default function SignUp() {
             </div>
 
       <form onSubmit={handleSubmit}>
-        <h1> Nova conta </h1>
+        <h1>Nova conta</h1>
         <input 
         type = "text" 
         placeholder="Seu nome"
